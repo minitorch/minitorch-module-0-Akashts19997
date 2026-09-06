@@ -22,7 +22,6 @@ from minitorch.operators import (
     prod,
     relu,
     relu_back,
-    sigmoid,
 )
 
 from .strategies import assert_close, small_floats
@@ -108,15 +107,31 @@ def test_sigmoid(a: float) -> None:
     * It is  strictly increasing.
     """
     # TODO: Implement for Task 0.2.
-    raise NotImplementedError("Need to implement for Task 0.2")
+    # 1. It is always between 0.0 and 1.0
+    val = minitorch.operators.sigmoid(a)
+    assert 0.0 <= val <= 1.0
 
+    # 2. one minus sigmoid is the same as sigmoid of the negative
+    assert minitorch.operators.sigmoid(-a) == pytest.approx(1.0 - val, abs=1e-5)
 
+    # 3. It crosses 0 at 0.5
+    assert minitorch.operators.sigmoid(0.0) == pytest.approx(0.5, abs=1e-5)
+
+    # 4. Strictly increasing (<= handles tail saturation, < tests the active region)
+    delta = 1.0
+    assert minitorch.operators.sigmoid(a) <= minitorch.operators.sigmoid(a + delta)
+    if -5.0 <= a <= 5.0:
+        assert minitorch.operators.sigmoid(a) < minitorch.operators.sigmoid(a + delta)
+        
+        
 @pytest.mark.task0_2
 @given(small_floats, small_floats, small_floats)
 def test_transitive(a: float, b: float, c: float) -> None:
     """Test the transitive property of less-than (a < b and b < c implies a < c)"""
     # TODO: Implement for Task 0.2.
-    raise NotImplementedError("Need to implement for Task 0.2")
+    #Test the transitive property of less-than (a < b and b < c implies a < c)
+    if minitorch.operators.lt(a, b) and minitorch.operators.lt(b, c):
+        assert minitorch.operators.lt(a, c)
 
 
 @pytest.mark.task0_2
@@ -125,7 +140,16 @@ def test_symmetric() -> None:
     gives the same value regardless of the order of its input.
     """
     # TODO: Implement for Task 0.2.
-    raise NotImplementedError("Need to implement for Task 0.2")
+    test_cases = [
+        (0.0, 5.0),
+        (-3.0, 4.0),
+        (2.5, -7.1),
+        (1e-4, 1e4),
+        (-0.5, -0.2),
+        (42.0, 13.37),
+    ]
+    for a, b in test_cases:
+        assert minitorch.operators.mul(a, b) == minitorch.operators.mul(b, a)
 
 
 @pytest.mark.task0_2
@@ -134,14 +158,36 @@ def test_distribute() -> None:
     :math:`z \times (x + y) = z \times x + z \times y`
     """
     # TODO: Implement for Task 0.2.
-    raise NotImplementedError("Need to implement for Task 0.2")
+    test_cases = [
+        (2.0, 3.0, 4.0),
+        (-1.5, 2.5, -3.0),
+        (0.0, 5.0, 10.0),
+        (0.5, 0.25, 0.75),
+        (-2.0, -4.0, 5.0),
+    ]
+
+    for z, x, y in test_cases:
+        lhs = minitorch.operators.mul(z, minitorch.operators.add(x, y))
+        rhs = minitorch.operators.add(
+            minitorch.operators.mul(z, x), minitorch.operators.mul(z, y)
+        )
+        assert lhs == pytest.approx(rhs)
 
 
 @pytest.mark.task0_2
 def test_other() -> None:
     """Write a test that ensures some other property holds for your functions."""
     # TODO: Implement for Task 0.2.
-    raise NotImplementedError("Need to implement for Task 0.2")
+    test_values = [-10.5, -1.0, -0.001, 0.0, 0.001, 2.5, 42.0]
+
+    for x in test_values:
+        r1 = minitorch.operators.relu(x)
+        r2 = minitorch.operators.relu(r1)
+
+        # Non-negative property
+        assert r1 >= 0.0
+        # Idempotent property
+        assert r1 == pytest.approx(r2)
 
 
 # ## Task 0.3  - Higher-order functions
