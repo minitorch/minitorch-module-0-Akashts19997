@@ -1,9 +1,7 @@
 """Collection of the core mathematical operators used throughout the code base."""
 
 import math
-
 # ## Task 0.1
-from typing import Callable, Iterable
 
 #
 # Implementation of a prelude of elementary functions.
@@ -33,7 +31,68 @@ from typing import Callable, Iterable
 
 
 # TODO: Implement for Task 0.1.
+def mul(x: float, y: float) -> float:
+    return x*y
 
+def id(x: float) -> float:
+    return x
+
+def add(x: float, y: float) -> float:
+    return x+y
+
+def neg(x: float) -> float:
+    return -1*x
+
+def lt(x: float, y: float) -> float:
+    if(x < y):
+        return 1.0
+    return 0.0
+
+def eq(x: float, y: float) -> float:
+    if(x == y):
+        return 1.0
+    return 0.0
+
+def max(x: float, y: float) -> float:
+    if(x < y):
+        return y
+    return x
+
+def is_close(x: float, y: float, tol: float = 1e-2) -> bool:
+    return abs(x - y) < tol
+
+def sigmoid(x: float) -> float:
+    if x >= 0:
+        return 1.0 / (1.0 + math.exp(-x))
+    else:
+        return math.exp(x) / (1.0 + math.exp(x))
+
+def relu(x: float) -> float:
+    return x if x > 0.0 else 0.0
+
+
+def log(x: float) -> float:
+    return math.log(x)
+
+
+def exp(x: float) -> float:
+    return math.exp(x)
+
+
+def inv(x: float) -> float:
+    return 1.0 / x
+
+
+def log_back(x: float, d: float) -> float:
+    return d / x
+
+
+def inv_back(x: float, d: float) -> float:
+    return -d / (x * x)
+
+
+def relu_back(x: float, d: float) -> float:
+    return d if x > 0.0 else 0.0
 
 # ## Task 0.3
 
