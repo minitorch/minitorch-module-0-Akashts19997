@@ -32,12 +32,16 @@ class Module:
     def train(self) -> None:
         """Set the mode of this module and all descendent modules to `train`."""
         # TODO: Implement for Task 0.4.
-        raise NotImplementedError("Need to implement for Task 0.4")
+        self.training = True
+        for mod in self._modules.values():
+            mod.train()
 
     def eval(self) -> None:
         """Set the mode of this module and all descendent modules to `eval`."""
         # TODO: Implement for Task 0.4.
-        raise NotImplementedError("Need to implement for Task 0.4")
+        self.training = False
+        for mod in self._modules.values():
+            mod.eval()
 
     def named_parameters(self) -> Sequence[Tuple[str, Parameter]]:
         """Collect all the parameters of this module and its descendents.
@@ -48,12 +52,32 @@ class Module:
 
         """
         # TODO: Implement for Task 0.4.
-        raise NotImplementedError("Need to implement for Task 0.4")
+        params: Sequence[Tuple[str, Parameter]] = []
+
+        # 1. Collect immediate parameters on this module
+        for name, p in self._parameters.items():
+            params.append((name, p))
+
+        # 2. Collect parameters from all child submodules with prefixed names
+        for mod_name, mod in self._modules.items():
+            for child_name, p in mod.named_parameters():
+                params.append((f"{mod_name}.{child_name}", p))
+
+        return params
 
     def parameters(self) -> Sequence[Parameter]:
         """Enumerate over all the parameters of this module and its descendents."""
         # TODO: Implement for Task 0.4.
-        raise NotImplementedError("Need to implement for Task 0.4")
+        params: Sequence[Parameter] = []
+        
+        for p in self._parameters.values():
+            params.append(p)
+            
+        for mod in self._modules.values():
+            for p in mod.parameters():
+                params.append(p)
+                
+        return params
 
     def add_parameter(self, k: str, v: Any) -> Parameter:
         """Manually add a parameter. Useful helper for scalar parameters.
